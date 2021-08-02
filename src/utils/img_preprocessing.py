@@ -7,7 +7,7 @@ def img2patches(rgb_img, patch_size, angle=270):
     :param patch_size: individual patches will be of size patch_size x patch_size
     :param angle: the angle by which to rotate the patch image.
                   Defaults to 270 for restoring original rotation
-    :return: the image patches
+    :return: the image patches, generated from right to left, top to botom
     """
     if not rgb_img.shape[-1] % patch_size == 0:
         raise ValueError("patch_size must cleanly divide height and width")
