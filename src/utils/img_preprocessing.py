@@ -22,6 +22,7 @@ def img2patches(rgb_img, patch_size, angle=270):
     # swap channel dim with col dim
     patches = patches.transpose(1, 2)
     # Make patches go from left to right, top to bottom insteaf of right to left, top to bottom
+    # TODO: Might be speed and memory-inefficient due to making a copy here!
     patches = torch.flip(patches, [1])
     patches = patches.reshape(-1, 3, patch_size, patch_size)
     patches = rotate(patches, angle)
