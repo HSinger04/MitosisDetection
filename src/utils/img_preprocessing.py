@@ -13,6 +13,8 @@ def img2patches(rgb_img, patch_size, angle=270):
         raise ValueError("patch_size must cleanly divide height and width")
     
     patches = rgb_img.unfold(1, patch_size, patch_size).unfold(2, patch_size, patch_size).unfold(3, patch_size, patch_size)
+    # TODO: What do the two "2"s mean in the line below? Seems like row and col dim when I look at the lines below, so prolly 
+    # needs to be changed.
     patches = patches.reshape((3, 2, 2, patch_size, patch_size))
     # swap channel dim with row dim
     patches = patches.transpose(0, 1)
