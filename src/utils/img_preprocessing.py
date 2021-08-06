@@ -52,8 +52,9 @@ def img_and_bboxes2patches(rgb_img, bboxes, patch_size, angle=270):
 
     for left_x, top_y, width, height in bboxes:
         # values help in determining in which image patch the four bbox coordinate points lie.
-        right_x = left_x + width
-        bottom_y = top_y + height
+        # -1 since consider e.g. 1x1 bbox. That bbox would have width == 1, but left_x == right_x
+        right_x = left_x + width - 1
+        bottom_y = top_y + height - 1
 
         # says in which patch the respective coordinate lies.
         patch_left_x = left_x // patch_size
@@ -78,14 +79,16 @@ def img_and_bboxes2patches(rgb_img, bboxes, patch_size, angle=270):
                     bbox_to_patch[1] = top_y % patch_size
                 # with width
                 if not patch_x == patch_right_x:
-                    bbox_to_patch[2] = patch_size - 1 - bbox_to_patch[0]
+                    bbox_to_patch[2] = patch_size - bbox_to_patch[0]
                 else:
-                    bbox_to_patch[2] = (right_x % patch_size) - bbox_to_patch[0] 
+                    # +1 since consider e.g. 1x1 bbox. That bbox would have width == 1, but left_x == right_x
+                    bbox_to_patch[2] = (right_x % patch_size) - bbox_to_patch[0] + 1
                 # with height
                 if not patch_y == patch_bottom_y:
-                    bbox_to_patch[3] = patch_size - 1 - bbox_to_patch[1]
+                    bbox_to_patch[3] = patch_size - bbox_to_patch[1]
                 else:
-                    bbox_to_patch[3] = (bottom_y % patch_size) - bbox_to_patch[1]
+                    # +1 since consider e.g. 1x1 bbox. That bbox would have height == 1, but top_x == bottom_x
+                    bbox_to_patch[3] = (bottom_y % patch_size) - bbox_to_patch[1] + 1
                 
                 # store the bbox
                 bboxes_to_patches[patch_x + patch_y * num_patches_root].append(bbox_to_patch)
