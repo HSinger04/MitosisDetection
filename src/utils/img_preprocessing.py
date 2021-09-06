@@ -28,7 +28,7 @@ def img2patches(rgb_img, patch_size, angle=270):
     patches = torch.flip(patches, [1])
     patches = patches.reshape(-1, 3, patch_size, patch_size)
     # TODO: remove
-    patches = torchvision.functional.rotate(patches, angle)
+    patches = torchvision.transforms.functional.rotate(patches, angle)
     #patches = TF.rotate(patches, angle)
     return patches
 
