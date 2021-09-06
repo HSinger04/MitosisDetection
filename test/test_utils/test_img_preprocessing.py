@@ -1,3 +1,5 @@
+import torch
+
 def test_img_and_bboxes2patches():
 
     img = torch.zeros((3, 9, 9))
@@ -34,12 +36,9 @@ def test_img_and_bboxes2patches():
     for bbox, exptd in zip(bboxes, expected):
         nested_bbox = [bbox]
         _, actual = img_and_bboxes2patches(img, nested_bbox, patch_size)
-        for k, v in exptd.items():
-            print("\n" * 2)
-            print(actual)
-            print("\n")
-            print(v)
-            assert actual[k][0] == v
+        for k, v in exptditems():
+            v = torch.tensor(v)
+            assert torch.all(actual[k][0] == v)
             actual[k] = []
         # assert that no actual bboxes were missed
         assert actual == init_bboxes
