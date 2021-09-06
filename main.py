@@ -1,4 +1,4 @@
-from test_img_preprocessing import test_img_and_bboxes2patches
+from test.test_utils.test_img_preprocessing import test_img_and_bboxes2patches
 import sys
 
 if __name__ == "__main__":
