@@ -1,6 +1,7 @@
 import torch
 from src.utils.img_preprocessing import img_and_bboxes2patches
 
+# TODO: Raises error that in img_and_bboxes2patches, patches needs to be PIL, even though tensor is also okay when run normally.
 def test_img_and_bboxes2patches():
 
     img = torch.zeros((3, 9, 9))
