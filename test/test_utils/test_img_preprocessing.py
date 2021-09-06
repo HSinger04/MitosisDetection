@@ -37,7 +37,7 @@ def test_img_and_bboxes2patches():
     for bbox, exptd in zip(bboxes, expected):
         nested_bbox = [bbox]
         _, actual = img_and_bboxes2patches(img, nested_bbox, patch_size)
-        for k, v in exptditems():
+        for k, v in exptd.items():
             v = torch.tensor(v)
             assert torch.all(actual[k][0] == v)
             actual[k] = []
