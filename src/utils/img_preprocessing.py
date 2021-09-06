@@ -1,4 +1,5 @@
 import torch
+import torchvision
 import torchvision.transforms.functional as TF
 from src.utils.length_and_point import length2endpt, pts2length
 
