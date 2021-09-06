@@ -1,5 +1,5 @@
 import torch
-from torchvision.transforms.functional import rotate
+import torchvision.transforms.functional as TF
 from src.utils.length_and_point import length2endpt, pts2length
 
 def img2patches(rgb_img, patch_size, angle=270):
