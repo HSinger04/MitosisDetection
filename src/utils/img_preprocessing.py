@@ -1,3 +1,4 @@
+import torch
 from torchvision.transforms.functional import rotate
 from src.utils.length_and_point import length2endpt, pts2length
 
