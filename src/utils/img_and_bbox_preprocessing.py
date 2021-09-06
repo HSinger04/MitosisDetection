@@ -3,6 +3,105 @@ import torchvision
 import torchvision.transforms.functional as TF
 from src.utils.length_and_point import length2endpt, pts2length
 
+def transform_bboxes(bboxes, orig_img_size, transform, transform_kwargs):
+    """
+    :param bboxes: bboxes whose elements are torch.tensor with left_x, top_y, width and height.
+    :param orig_img_size: the size of the corresponding img before the transformation
+    :param transform: what transformation from torchvision.transforms to apply
+    :param new_img_size: necessary kwargs for the transformation 
+    :return: transformed bbox
+    """
+
+    new_bboxes = []
+
+    for bbox in bboxes:
+
+        new_bbox = torch.empty(4)
+
+        right_x = length2endpt(bbox[0], bbox[2])
+        bottom_y = length2endpt(bbox[1], bbox[3])
+
+        # create a matrix of size orig_img_size that has 1 at the 
+        # top left and bottom right bbox coordinate and 0 otherwise
+        orig_bbox = torch.zeros(torch.Size([3]) + orig_img_size)
+        orig_bbox[0, bbox[1], bbox[0]] = 1
+        orig_bbox[0, bottom_y, right_x] = 1
+
+        transformed_bbox = transform(orig_bbox, **transform_kwargs)
+        (_, new_top, new_left), (_, new_bottom, new_right) = torch.nonzero(transformed_bbox)
+
+        new_bbox[0] = new_left
+        new_bbox[1] = new_top
+        new_bbox[2] = pts2length(new_left, new_right) 
+        new_bbox[3] = pts2length(new_top, new_bottom) 
+
+        new_bboxes.append(new_bbox)
+
+    return new_bboxes
+
+
+def transform_img_and_bboxes(img, bboxes, transform, transform_kwargs):
+    orig_img_size = img.shape[-2:]
+    new_bboxes = transform_bboxes(bboxes, orig_img_size, transform, transform_kwargs)
+    new_img = transform(img, **transform_kwargs)
+
+    return new_img, new_bboxes
+
+def resize_img_and_bboxes(img, bboxes, new_img_size):
+    return transform_img_and_bboxes(img, bboxes, TF.resize, {"size": new_img_size})
+
+def rotate_bboxes(bboxes, orig_img_size, angle):
+    """
+    :param bboxes: bboxes whose elements are torch.tensor with left_x, top_y, width and height.
+    :param orig_img_size: the size of the corresponding img. Must be square
+    :param transform: what transformation from torchvision.transforms to apply
+    :param angle: angle to rotate by counter-clockwise. Only 90, 180 and 270 are supported
+    :return: rotated bboxes
+    """
+
+    if not angle in {0, 90, 180, 270}:
+        raise ValueError("Angle must be 90, 180 or 270")
+
+    if not orig_img_size[0] == orig_img_size[1]:
+        raise ValueError("Image is not square")
+
+    if angle == 0:
+        return bboxes
+    
+    new_bboxes = []
+
+    for new_left_x, new_top_y, new_width, new_height in bboxes:
+        
+        if angle == 90 or angle == 270:
+            # swap top_y and left_x
+            temp1 = new_left_x
+            new_left_x = new_top_y
+            new_top_y = temp1
+
+            temp2 = new_width
+            new_width = new_height
+            new_height = temp2
+        
+        if angle == 180 or angle == 270:
+            new_top_y = orig_img_size[0] - length2endpt(new_top_y, new_height)
+            new_left_x = orig_img_size[1] - length2endpt(new_left_x, new_width)
+
+        new_bboxes.append(torch.tensor([new_left_x, new_top_y, new_width, new_height]))    
+
+    return new_bboxes
+    
+
+def rotate_img_and_bboxes(img, bboxes, angle):
+    orig_img_size = img.shape[-2:]
+    new_bboxes = rotate_bboxes(bboxes, orig_img_size, angle)
+    new_img = TF.rotate(img, angle)
+
+    return new_img, new_bboxes
+
+# Buggy but more elegant version for rotate_img_and_bboxes. Problematic when angle = 270 or angle = 90 is used.
+#def rotate_img_and_bboxes(img, bboxes, angle):
+#    return transform_img_and_bboxes(img, bboxes, TF.rotate, {"angle": angle})
+
 def img2patches(rgb_img, patch_size, angle=270):
     """
     :param rgb_img: the image to split. Must be square
