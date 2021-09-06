@@ -1,4 +1,5 @@
 import torch
+from src.utils.img_preprocessing import img_and_bboxes2patches
 
 def test_img_and_bboxes2patches():
 
