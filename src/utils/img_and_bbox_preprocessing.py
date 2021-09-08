@@ -126,9 +126,7 @@ def img2patches(rgb_img, patch_size, angle=270):
     # Make patches go from left to right, top to bottom insteaf of right to left, top to bottom
     patches = torch.flip(patches, [1])
     patches = patches.reshape(-1, 3, patch_size, patch_size)
-    # TODO: remove
-    patches = torchvision.transforms.functional.rotate(patches, angle)
-    #patches = TF.rotate(patches, angle)
+    patches = TF.rotate(patches, angle)
     return patches
 
 
