@@ -19,7 +19,7 @@ def bmp_to_png(dir, end_txt):
                     
                     
 
-def get_bboxes(src_path, height_and_width=True):
+def get_bboxes(src_path, to_height_and_width=True):
     """
     :param src_path: Path to bbox csv file
     :param height_and_width: True iff src_path's file contains right_x and bottom_y and they need to be converted to width and height.
