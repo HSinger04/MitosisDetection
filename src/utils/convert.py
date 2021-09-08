@@ -19,7 +19,11 @@ def bmp_to_png(dir, end_txt):
                     
                     
 
-def get_bboxes(src_path):
+def get_bboxes(src_path, height_and_width=True):
+    """
+    :param src_path: Path to bbox csv file
+    :param height_and_width: True iff src_path's file contains right_x and bottom_y and they need to be converted to width and height.
+    """
 
     bboxes = []
 
@@ -30,17 +34,18 @@ def get_bboxes(src_path):
             bbox = []
             csv_line = torch.torch(csv_line).astype(torch.int)
             left_x = csv_line[::2].min()
-            right_x = csv_line[::2].max()
+            right_x_or_width = csv_line[::2].max()
             top_y = csv_line[1::2].min()
-            bottom_y = csv_line[1::2].max()
-            height = pts2length(top_y, bottom_y)
-            width = pts2length(left_x, right_x)
+            bottom_y_or_height = csv_line[1::2].max()
+            if height_and_width:
+                right_x_or_width = pts2length(top_y, bottom_y_or_height)
+                bottom_y_or_height = pts2length(left_x, right_x_or_width)
 
             # store left_x, top_y, width, height
             bbox.append(left_x) 
             bbox.append(top_y)
-            bbox.append(width)
-            bbox.append(height)
+            bbox.append(right_x_or_width)
+            bbox.append(bottom_y_or_height)
 
             bboxes.append(bbox)
 
