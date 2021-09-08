@@ -37,7 +37,7 @@ def get_bboxes(src_path, to_height_and_width=True):
             right_x_or_width = csv_line[::2].max()
             top_y = csv_line[1::2].min()
             bottom_y_or_height = csv_line[1::2].max()
-            if height_and_width:
+            if to_height_and_width:
                 right_x_or_width = pts2length(top_y, bottom_y_or_height)
                 bottom_y_or_height = pts2length(left_x, right_x_or_width)
 
